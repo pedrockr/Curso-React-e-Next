@@ -1,0 +1,40 @@
+-->passando atritibuto atraves das props com destructuring
+    export const PostCard = ({title, cover, id, body}) => {}
+também pode ser utilizado destructuring dentro da funcao para acessar os atributos pelo props.
+    export const PostCard = (props) => {
+        const {title, cover, id, body} = props
+    }
+nas duas formas, por causa do destructuring não é necessario utilizar props.atributo
+
+-->funcao utilizada para receber os dados da apis e retornar o json unindo os dois retornos pelo id
+export const loadPosts = async () =>{
+    const postResponse = fetch('https://jsonplaceholder.typicode.com/posts')
+    const photoResponse = fetch('https://jsonplaceholder.typicode.com/photos')
+    
+Promise.all recebe mais de uma promise e retorna apenas uma, neste caso esta esperando o retorno das duas promises para adicionar as
+respectivas variaveis
+    const [posts, photos] = await Promise.all([postResponse, photoResponse])
+
+    const postJson = await posts.json()
+    const photoJson = await photos.json()
+funcao zipper, esta unindo os dois json em um pelo index
+    const postsAndPhotos = postJson.map((post, index)=>{
+      return{...post, cover:photoJson[index].url}
+    })
+
+    return postsAndPhotos
+}
+
+--->função para criar paginação.
+allPosts contem o array com todos os posts e posts inicia com os posts da primeira pagina e 
+vai recebendo os mais posts confome chamada a funcao loadMorePosts
+loadMorePosts = () => {
+    const {page, postsPerPage, allPosts, posts} = this.state
+    const nextPage = page + postsPerPage
+    const nextPosts = allPosts.slice(nextPage, nextPage + postsPerPage)
+    posts.push({...nextPosts})
+
+    this.setState({posts, page: nextPage})
+  }
+
+
